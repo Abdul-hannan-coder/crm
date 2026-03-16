@@ -13,10 +13,13 @@ import {
   ArrowRight,
   Loader2,
 } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+export interface LoginPageProps {
+  login: (email: string, password: string) => Promise<void>;
+  signup: (email: string, password: string, fullName?: string, companyName?: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
+}
 
-export function LoginPage() {
-  const { login, signup, signInWithGoogle } = useAuth();
+export function LoginPage({ login, signup, signInWithGoogle }: LoginPageProps) {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");

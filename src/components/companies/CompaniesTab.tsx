@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { useCompanies } from "@/hooks/useCompanies";
+import { createCompany } from "@/lib/api/companies";
 import { useTableState } from "@/hooks/useTableState";
 import { MainDataTable } from "@/components/shared/MainDataTable";
 import { RecordDetailView } from "@/components/shared/RecordDetailView";
@@ -32,6 +32,9 @@ export interface CompaniesTabProps {
   setShowImportModal?: (v: boolean) => void;
   openCustomizeTableModal?: () => void;
   showNotification?: (message: string, type: "success" | "error" | "info") => void;
+  companies?: Company[];
+  loading?: boolean;
+  refetch?: () => void;
 }
 
 const emptyText = <span className="text-gray-400 text-xs font-light">—</span>;
@@ -50,8 +53,10 @@ export function CompaniesTab({
   setShowImportModal = () => {},
   openCustomizeTableModal = () => {},
   showNotification,
+  companies = [],
+  loading = false,
+  refetch = () => {},
 }: CompaniesTabProps = {}) {
-  const { companies, loading, createCompany, refetch } = useCompanies();
   const table = useTableState("companies");
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);

@@ -9,12 +9,16 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import { useOpportunities } from "@/hooks/useOpportunities";
-import { useCandidates } from "@/hooks/useCandidates";
 import { useDeals } from "@/hooks/useDeals";
-import { usePipelines } from "@/hooks/usePipelines";
 import type { Opportunity } from "@/types/opportunity";
 import type { Pipeline } from "@/types/pipeline";
+import type { Candidate } from "@/types";
+
+interface ReportsTabProps {
+  opportunities?: Opportunity[];
+  candidates?: Candidate[];
+  pipelines?: Pipeline[];
+}
 
 const STAGE_COLORS = [
   "#3b82f6",
@@ -88,11 +92,8 @@ function CustomLabel({
   );
 }
 
-export function ReportsTab() {
-  const { opportunities } = useOpportunities();
-  const { candidates } = useCandidates();
+export function ReportsTab({ opportunities = [], candidates = [], pipelines = [] }: ReportsTabProps = {}) {
   const { deals } = useDeals();
-  const { pipelines } = usePipelines();
 
   const pipelineDonutData = useMemo(
     () => getStageCounts(opportunities, pipelines),

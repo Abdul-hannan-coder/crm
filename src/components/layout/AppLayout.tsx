@@ -18,13 +18,10 @@ import { EmailSettingsTab } from "../settings/EmailSettingsTab";
 import { AutomationsTab } from "../settings/AutomationsTab";
 import { CustomFieldsTab } from "../settings/CustomFieldsTab";
 import { ReportsTab } from "../reports/ReportsTab";
-import { useAuth } from "@/hooks/useAuth";
 import { useNotification } from "@/hooks/useNotification";
 import { useCandidates } from "@/hooks/useCandidates";
 import { useContacts } from "@/hooks/useContacts";
 import { useCompanies } from "@/hooks/useCompanies";
-import { useTasks } from "@/hooks/useTasks";
-import { useDeals } from "@/hooks/useDeals";
 import { useOpportunities } from "@/hooks/useOpportunities";
 import { usePipelines } from "@/hooks/usePipelines";
 import {
@@ -38,10 +35,16 @@ import * as companiesApi from "@/lib/api/companies";
 import * as opportunitiesApi from "@/lib/api/opportunities";
 import * as pipelinesApi from "@/lib/api/pipelines";
 
+import type { User } from "@/types";
+
 const DELETE_CONFIRM_VALUE = "DELETE";
 
-export function AppLayout() {
-  const { user, logout } = useAuth();
+interface AppLayoutProps {
+  user: User | null;
+  logout: () => Promise<void>;
+}
+
+export function AppLayout({ user, logout }: AppLayoutProps) {
   const { message, type, showNotification } = useNotification();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [selectedItem, setSelectedItem] = useState<unknown>(null);
@@ -57,11 +60,9 @@ export function AppLayout() {
     initialDeleteConfirmState
   );
 
-  const { candidates, refetch: refetchCandidates } = useCandidates();
-  const { contacts, refetch: refetchContacts } = useContacts();
-  const { companies, refetch: refetchCompanies } = useCompanies();
-  const { tasks } = useTasks();
-  const { deals } = useDeals();
+  const { candidates, loading: candidatesLoading, refetch: refetchCandidates } = useCandidates();
+  const { contacts, loading: contactsLoading, refetch: refetchContacts } = useContacts();
+  const { companies, loading: companiesLoading, refetch: refetchCompanies } = useCompanies();
   const { opportunities, refetch: refetchOpportunities } = useOpportunities();
   const { pipelines, refetch: refetchPipelines } = usePipelines();
 
@@ -202,6 +203,9 @@ export function AppLayout() {
         )}
         {activeTab === "candidates" && (
           <CandidatesTab
+            candidates={candidates}
+            loading={candidatesLoading}
+            refetch={refetchCandidates}
             selectedItem={selectedItem}
             setSelectedItem={setSelectedItem}
             showForm={showForm}
@@ -221,6 +225,9 @@ export function AppLayout() {
         )}
         {activeTab === "contacts" && (
           <ContactsTab
+            contacts={contacts}
+            loading={contactsLoading}
+            refetch={refetchContacts}
             selectedItem={selectedItem}
             setSelectedItem={setSelectedItem}
             showForm={showForm}
@@ -238,6 +245,9 @@ export function AppLayout() {
         )}
         {activeTab === "companies" && (
           <CompaniesTab
+            companies={companies}
+            loading={companiesLoading}
+            refetch={refetchCompanies}
             selectedItem={selectedItem}
             setSelectedItem={setSelectedItem}
             showForm={showForm}
@@ -255,12 +265,23 @@ export function AppLayout() {
         )}
         {activeTab === "opportunities" && (
           <OpportunitiesTab
+            opportunities={opportunities}
+            pipelines={pipelines}
+            refetchOpportunities={refetchOpportunities}
+            refetchPipelines={refetchPipelines}
+            candidates={candidates}
+            contacts={contacts}
             triggerDelete={triggerDelete}
             showNotification={showNotification}
           />
         )}
         {activeTab === "tasks" && (
-          <TasksTab showNotification={showNotification} />
+          <TasksTab
+            candidates={candidates}
+            contacts={contacts}
+            companies={companies}
+            showNotification={showNotification}
+          />
         )}
         {activeTab === "deals" && (
           <DealsTab showNotification={showNotification} />
@@ -272,10 +293,19 @@ export function AppLayout() {
           <EmailSettingsTab showNotification={showNotification} />
         )}
         {activeTab === "automations" && (
-          <AutomationsTab showNotification={showNotification} />
+          <AutomationsTab
+            pipelines={pipelines}
+            showNotification={showNotification}
+          />
         )}
         {activeTab === "customFields" && <CustomFieldsTab />}
-        {activeTab === "reports" && <ReportsTab />}
+        {activeTab === "reports" && (
+          <ReportsTab
+            opportunities={opportunities}
+            candidates={candidates}
+            pipelines={pipelines}
+          />
+        )}
       </div>
 
       <ResumeParserModal

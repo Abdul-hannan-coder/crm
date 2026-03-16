@@ -3,17 +3,17 @@
 import { useState, useCallback } from "react";
 import { Plus, Pencil, Trash2, Power, PowerOff } from "lucide-react";
 import { useAutomations } from "@/hooks/useAutomations";
-import { usePipelines } from "@/hooks/usePipelines";
 import type { Automation } from "@/types";
+import type { Pipeline } from "@/types";
 
 interface AutomationsTabProps {
   showNotification: (msg: string, type?: "success" | "error") => void;
+  pipelines?: Pipeline[];
 }
 
-export function AutomationsTab({ showNotification }: AutomationsTabProps) {
+export function AutomationsTab({ showNotification, pipelines = [] }: AutomationsTabProps) {
   const { automations, loading, refetch, createAutomation, updateAutomation, deleteAutomation } =
     useAutomations();
-  const { pipelines } = usePipelines();
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({ name: "", pipeline_id: "", stage_id: "", conditions: "" });

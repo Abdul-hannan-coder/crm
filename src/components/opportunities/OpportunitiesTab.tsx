@@ -11,11 +11,7 @@ import {
   RefreshCw,
   X,
 } from "lucide-react";
-import { useOpportunities } from "@/hooks/useOpportunities";
-import { usePipelines } from "@/hooks/usePipelines";
 import { useDeletedItems } from "@/hooks/useDeletedItems";
-import { useCandidates } from "@/hooks/useCandidates";
-import { useContacts } from "@/hooks/useContacts";
 import * as opportunitiesApi from "@/lib/api/opportunities";
 import * as pipelinesApi from "@/lib/api/pipelines";
 import { PipelineFormModal } from "./PipelineFormModal";
@@ -25,6 +21,12 @@ import type { Pipeline, PipelineStage } from "@/types";
 import type { DeletedItem } from "@/types";
 
 export interface OpportunitiesTabProps {
+  opportunities?: Opportunity[];
+  pipelines?: Pipeline[];
+  refetchOpportunities?: () => void;
+  refetchPipelines?: () => void;
+  candidates?: import("@/types").Candidate[];
+  contacts?: import("@/types").Contact[];
   triggerDelete?: (payload: {
     type: string;
     id: string | string[];
@@ -45,6 +47,12 @@ const STAGE_BORDER_COLORS = [
 ];
 
 export function OpportunitiesTab({
+  opportunities: opportunitiesProp = [],
+  pipelines: pipelinesProp = [],
+  refetchOpportunities: refetchOpportunitiesProp = () => {},
+  refetchPipelines: refetchPipelinesProp = () => {},
+  candidates: candidatesProp = [],
+  contacts: contactsProp = [],
   triggerDelete,
   showNotification = () => {},
 }: OpportunitiesTabProps = {}) {
@@ -60,12 +68,12 @@ export function OpportunitiesTab({
   const [draggingOppId, setDraggingOppId] = useState<string | null>(null);
   const [dragOverStageId, setDragOverStageId] = useState<string | null>(null);
 
-  const { opportunities, loading, refetch: refetchOpportunities } = useOpportunities();
-  const { pipelines, refetch: refetchPipelines } = usePipelines();
+  const { opportunities, loading, refetch: refetchOpportunities } = { opportunities: opportunitiesProp, loading: false, refetch: refetchOpportunitiesProp };
+  const { pipelines, refetch: refetchPipelines } = { pipelines: pipelinesProp, refetch: refetchPipelinesProp };
   const { deletedItems, refetch: refetchDeleted, restoreDeletedItem, deleteDeletedItem } =
     useDeletedItems();
-  const { candidates } = useCandidates();
-  const { contacts } = useContacts();
+  const candidates = candidatesProp;
+  const contacts = contactsProp;
 
   const openCreatePipelineModal = useCallback((pipe: Pipeline | null) => {
     setEditingPipeline(pipe);

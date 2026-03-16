@@ -6,7 +6,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { Loader2 } from "lucide-react";
 
 export default function HomePage() {
-  const { user, loading } = useAuth();
+  const { user, loading, login, signup, signInWithGoogle, logout } = useAuth();
 
   if (loading) {
     return (
@@ -17,8 +17,8 @@ export default function HomePage() {
   }
 
   if (!user) {
-    return <LoginPage />;
+    return <LoginPage login={login} signup={signup} signInWithGoogle={signInWithGoogle} />;
   }
 
-  return <AppLayout />;
+  return <AppLayout user={user} logout={logout} />;
 }

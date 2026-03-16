@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { FileText } from "lucide-react";
-import { useCandidates } from "@/hooks/useCandidates";
+import { createCandidate } from "@/lib/api/candidates";
 import { useTableState } from "@/hooks/useTableState";
 import { MainDataTable } from "@/components/shared/MainDataTable";
 import { RecordDetailView } from "@/components/shared/RecordDetailView";
@@ -36,6 +36,9 @@ export interface CandidatesTabProps {
   setShowResumeParser?: (v: boolean) => void;
   onOpenResumePreview?: (url: string) => void;
   showNotification?: (message: string, type: "success" | "error" | "info") => void;
+  candidates?: Candidate[];
+  loading?: boolean;
+  refetch?: () => void;
 }
 
 const emptyText = <span className="text-gray-400 text-xs font-light">—</span>;
@@ -56,8 +59,10 @@ export function CandidatesTab({
   setShowResumeParser,
   onOpenResumePreview,
   showNotification,
+  candidates = [],
+  loading = false,
+  refetch = () => {},
 }: CandidatesTabProps = {}) {
-  const { candidates, loading, createCandidate, refetch } = useCandidates();
   const table = useTableState("candidates");
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);

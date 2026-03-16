@@ -16,19 +16,16 @@ import type { Candidate } from "@/types";
 import type { Contact } from "@/types";
 import type { Company } from "@/types";
 import { useTasks } from "@/hooks/useTasks";
-import { useCandidates } from "@/hooks/useCandidates";
-import { useContacts } from "@/hooks/useContacts";
-import { useCompanies } from "@/hooks/useCompanies";
 
 interface TasksTabProps {
   showNotification: (msg: string, type?: "success" | "error") => void;
+  candidates?: Candidate[];
+  contacts?: Contact[];
+  companies?: Company[];
 }
 
-export function TasksTab({ showNotification }: TasksTabProps) {
+export function TasksTab({ showNotification, candidates = [], contacts = [], companies = [] }: TasksTabProps) {
   const { tasks, createTask, updateTask, deleteTask, bulkDeleteTasks } = useTasks();
-  const { candidates } = useCandidates();
-  const { contacts } = useContacts();
-  const { companies } = useCompanies();
 
   const [taskSearch, setTaskSearch] = useState("");
   const [taskFilter, setTaskFilter] = useState("All Tasks");

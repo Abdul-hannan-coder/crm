@@ -2,13 +2,11 @@
 
 import { useState, useEffect, useCallback } from "react";
 
-const POLL_INTERVAL_MS = 10000;
-
 export function useApiData<T>(
   fetchFn: () => Promise<T>,
-  options?: { pollInterval?: number; enabled?: boolean }
+  options?: { enabled?: boolean }
 ) {
-  const { pollInterval = POLL_INTERVAL_MS, enabled = true } = options ?? {};
+  const { enabled = true } = options ?? {};
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -30,12 +28,6 @@ export function useApiData<T>(
   useEffect(() => {
     refetch();
   }, [refetch]);
-
-  useEffect(() => {
-    if (!enabled || !pollInterval) return;
-    const id = setInterval(refetch, pollInterval);
-    return () => clearInterval(id);
-  }, [refetch, enabled, pollInterval]);
 
   return { data, loading, error, refetch };
 }

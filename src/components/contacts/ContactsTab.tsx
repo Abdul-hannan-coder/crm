@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { useContacts } from "@/hooks/useContacts";
+import { createContact } from "@/lib/api/contacts";
 import { useTableState } from "@/hooks/useTableState";
 import { MainDataTable } from "@/components/shared/MainDataTable";
 import { RecordDetailView } from "@/components/shared/RecordDetailView";
@@ -32,6 +32,9 @@ export interface ContactsTabProps {
   setShowImportModal?: (v: boolean) => void;
   openCustomizeTableModal?: () => void;
   showNotification?: (message: string, type: "success" | "error" | "info") => void;
+  contacts?: Contact[];
+  loading?: boolean;
+  refetch?: () => void;
 }
 
 const emptyText = <span className="text-gray-400 text-xs font-light">—</span>;
@@ -50,8 +53,10 @@ export function ContactsTab({
   setShowImportModal = () => {},
   openCustomizeTableModal = () => {},
   showNotification,
+  contacts = [],
+  loading = false,
+  refetch = () => {},
 }: ContactsTabProps = {}) {
-  const { contacts, loading, createContact, refetch } = useContacts();
   const table = useTableState("contacts");
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
